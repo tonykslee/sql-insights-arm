@@ -6,6 +6,6 @@ SQL Insights ARM Template
 
 ##### Solutions Installed in this template:
 * SQLAdvancedThreatProtection
-* SQLAssessment
+* SQLAssessment (SQL Health Check)
 * SQLVulnerabilityAssessment
 * AzureActivity
