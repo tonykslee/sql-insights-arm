@@ -1,9 +1,10 @@
 SQL Insights ARM Template
+-
 
-Parameters required:
+##### Parameters required:
 * workspace name
 
-Solutions Installed in this template:
+##### Solutions Installed in this template:
 * SQLAdvancedThreatProtection
 * SQLAssessment
 * SQLVulnerabilityAssessment
