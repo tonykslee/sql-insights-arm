@@ -1,0 +1,92 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-03-15-preview",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "name": "[parameters('workspaceName')]",
+            "location": "[resourceGroup().location]",
+            "resources": [
+                {
+                    "apiVersion": "2015-11-01-preview",
+                    "type": "Microsoft.OperationsManagement/solutions",
+                    "location": "[resourceGroup().location]",
+                    "name": "[Concat('SQLAdvancedThreatProtection', '(', parameters('workspaceName'), ')')]",
+                    "dependsOn": [
+                        "[Concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+                    ],
+                    "properties": {
+                        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+                    },
+                    "plan": {
+                        "name": "[Concat('SQLAdvancedThreatProtection', '(', parameters('workspaceName'), ')')]",
+                        "product": "OMSGallery/SQLAdvancedThreatProtection",
+                        "promotionCode": "",
+                        "publisher": "Microsoft"
+                    }
+                },
+                {
+                    "apiVersion": "2015-11-01-preview",
+                    "type": "Microsoft.OperationsManagement/solutions",
+                    "location": "[resourceGroup().location]",
+                    "name": "[Concat('SQLAssessment', '(', parameters('workspaceName'), ')')]",
+                    "dependsOn": [
+                        "[Concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+                    ],
+                    "properties": {
+                        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+                    },
+                    "plan": {
+                        "name": "[Concat('SQLAssessment', '(', parameters('workspaceName'), ')')]",
+                        "product": "OMSGallery/SQLAssessment",
+                        "promotionCode": "",
+                        "publisher": "Microsoft"
+                    }
+                },
+                {
+                    "apiVersion": "2015-11-01-preview",
+                    "type": "Microsoft.OperationsManagement/solutions",
+                    "location": "[resourceGroup().location]",
+                    "name": "[Concat('SQLVulnerabilityAssessment', '(', parameters('workspaceName'), ')')]",
+                    "dependsOn": [
+                        "[Concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+                    ],
+                    "properties": {
+                        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+                    },
+                    "plan": {
+                        "name": "[Concat('SQLVulnerabilityAssessment', '(', parameters('workspaceName'), ')')]",
+                        "product": "OMSGallery/SQLVulnerabilityAssessment",
+                        "promotionCode": "",
+                        "publisher": "Microsoft"
+                    }
+                },
+                {
+                    "apiVersion": "2015-11-01-preview",
+                    "type": "Microsoft.OperationsManagement/solutions",
+                    "location": "[resourceGroup().location]",
+                    "name": "[Concat('AzureActivity', '(', parameters('workspaceName'), ')')]",
+                    "dependsOn": [
+                        "[Concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+                    ],
+                    "properties": {
+                        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+                    },
+                    "plan": {
+                        "name": "[Concat('AzureActivity', '(', parameters('workspaceName'), ')')]",
+                        "promotionCode": "",
+                        "product": "OMSGallery/AzureActivity",
+                        "publisher": "Microsoft"
+                    }
+                }
+            ]
+        }
+    ]
+}
