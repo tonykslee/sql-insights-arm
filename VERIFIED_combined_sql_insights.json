@@ -5,6 +5,42 @@
         "workspaceName": {
             "type": "string",
             "defaultValue": ""
+        },
+        "MmaAgentName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name will be Windows: MMAExtension, Linux: OMSExtension."
+            }
+        },
+        "MmaExtensionType": {
+            "type": "string",
+            "metadata": {
+                "description": "MMA Extension Type, Windows: MicrosoftMonitoringAgent, Linux: OmsAgentForLinux."
+            }
+        },
+        "MmaExtensionVersion": {
+            "type": "string",
+            "metadata": {
+               " description": "MMA/OMS Extension Version."
+            }
+        },
+        "VmLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "The Virtual Machine Location."
+            }
+        },
+        "VmName": {
+            "type": "string",
+            "metadata": {
+                "description": "The Virtual Machine Name."
+            }
+        },
+        "VmType": {
+            "type": "string",
+            "metadata": {
+                "description": "VM type: 1. virtualMachines, 2 virtualMachineScaleSets."
+            }
         }
     },
     "resources": [
@@ -86,6 +122,29 @@
                         "publisher": "Microsoft"
                     }
                 }
+            ]
+        },
+        {
+            "type": "extensions",
+            "name": "[parameters('MmaAgentName')]",
+            "apiVersion": "2018-10-01",
+            "location": "[parameters('VmLocation')]",
+            "properties": {
+                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                "type": "[parameters('MmaExtensionType')]",
+                "typeHandlerVersion": "[parameters('MmaExtensionVersion')]",
+                "autoUpgradeMinorVersion": "true",
+                "settings": {
+                    "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]",
+                    "azureResourceId": "[parameters('VmResourceId')]",
+                    "stopOnMultipleConnections": "[variables('stopOnMultipleConnections')]"
+                },
+                "protectedSettings": {
+                    "workspaceKey": "[listKeys([resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))], '2015-03-20').primarySharedKey]"
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/', parameters('VmType'), '/', parameters('VmName'))]"
             ]
         }
     ]
