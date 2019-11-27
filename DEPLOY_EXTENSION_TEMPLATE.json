@@ -2,6 +2,25 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "WorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The Workspace Name."
+            }
+        },
+        "VmName": {
+            "type": "string",
+            "metadata": {
+                "description": "The Virtual Machine Name."
+            }
+        },
+        "VmType": {
+            "type": "string",
+            "defaultValue": "virtualMachines",
+            "metadata": {
+                "description": "VM type: 1. virtualMachines, 2 virtualMachineScaleSets."
+            }
+        },
         "MmaExtensionVersion": {
             "type": "string",
             "defaultValue": "1.0",
@@ -16,28 +35,12 @@
                 "description": "Dependency Agent Extension Version."
             }
         },
-        "VmType": {
-            "type": "string",
-            "defaultValue": "virtualMachines",
-            "metadata": {
-                "description": "VM type: 1. virtualMachines, 2 virtualMachineScaleSets."
-            }
-        },
-        "VmName": {
-            "type": "string",
-            "metadata": {
-                "description": "The Virtual Machine Name."
-            }
-        },
         "OsType": {
             "type": "string",
             "defaultValue": "Windows",
             "metadata": {
                 "description": "Operating System. Example Windows or Linux"
             }
-        },
-        "WorkspaceName": {
-            "type": "string"
         }
     },
     "variables": {
