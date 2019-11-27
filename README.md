@@ -34,6 +34,18 @@ This is a collection of ARM templates used to automate the deployment of Solutio
 * Da Extension - This extension installs the Dependency Agent on the VM
 
 
+### Deploy Extensions + Solutions
+| Parameter             | Type   | Description                                                      |
+|-----------------------|--------|------------------------------------------------------------------|
+| Mma Extension Version | String | MMA/OMS Extension Version. Currently: Windows - 1.0, Linux - 1.4 |
+| Da Extension Version  | String | Dependency Agent Extension Version.                              |
+| Vm Type               | String | VM type: 1. virtualMachines, 2 virtualMachineScaleSets.          |
+| Workspace Name        | String |                                                                  |
+| Vm Name               | String |                                                                  |
+| Os Type               | String | Operating System. Example Windows or Linux                       |
+
+Deploys the above templates together installing the same extensions and solutions.
+
 ----
 ##### Coming Soon
 * Install pre-made workbooks along with the solutions with this template
