@@ -2,6 +2,25 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "WorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The Workspace Name."
+            }
+        },
+        "VmName": {
+            "type": "string",
+            "metadata": {
+                "description": "The Virtual Machine Name."
+            }
+        },
+        "VmType": {
+            "type": "string",
+            "defaultValue": "virtualMachines",
+            "metadata": {
+                "description": "VM type: 1. virtualMachines, 2 virtualMachineScaleSets."
+            }
+        },
         "MmaExtensionVersion": {
             "type": "string",
             "defaultValue": "1.0",
@@ -16,36 +35,12 @@
                 "description": "Dependency Agent Extension Version."
             }
         },
-        "VmType": {
-            "type": "string",
-            "defaultValue": "virtualMachines",
-            "metadata": {
-                "description": "VM type: 1. virtualMachines, 2 virtualMachineScaleSets."
-            }
-        },
-        "VmName": {
-            "type": "string",
-            "metadata": {
-                "description": "The Virtual Machine Name."
-            }
-        },
         "OsType": {
             "type": "string",
             "defaultValue": "Windows",
             "metadata": {
                 "description": "Operating System. Example Windows or Linux"
             }
-        },
-        "WorkspaceName": {
-            "type": "string"
-        },
-        "WorkspaceResourceId": {
-            "defaultValue": "subscriptions/53663872-3c40-42bd-a51d-df614038cb54/resourceGroups/sql-insights-uswest2-rg/providers/Microsoft.OperationalInsights/workspaces/",
-            "type": "string"
-        },
-        "VmResourceId": {
-            "defaultValue": "subscriptions/53663872-3c40-42bd-a51d-df614038cb54/resourceGroups/sql-insights-uswest2-rg/providers/Microsoft.Compute/virtualMachines/",
-            "type": "string"
         }
     },
     "variables": {
@@ -71,12 +66,12 @@
                         "typeHandlerVersion": "[parameters('MmaExtensionVersion')]",
                         "autoUpgradeMinorVersion": "true",
                         "settings": {
-                            "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
-                            "azureResourceId": "[parameters('VmResourceId')]",
+                            "workspaceId": "[reference(variables('WorkspaceResourceId'), '2015-03-20').customerId]",
+                            "azureResourceId": "[variables('VmResourceId')]",
                             "stopOnMultipleConnections": "[if(equals(toUpper(parameters('OsType')), 'WINDOWS'), 'false', 'true')]"
                         },
                         "protectedSettings": {
-                            "workspaceKey": "[listKeys(parameters('WorkspaceResourceId'), '2015-03-20').primarySharedKey]"
+                            "workspaceKey": "[listKeys(variables('WorkspaceResourceId'), '2015-03-20').primarySharedKey]"
                         }
                     },
                     "dependsOn": [
@@ -89,7 +84,7 @@
                     "apiVersion": "2018-10-01",
                     "location": "[variables('VmLocation')]",
                     "dependsOn": [
-                        "[parameters('VmResourceId')]"
+                        "[variables('VmResourceId')]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
