@@ -38,14 +38,6 @@
         },
         "WorkspaceName": {
             "type": "string"
-        },
-        "WorkspaceResourceId": {
-            "defaultValue": "subscriptions/53663872-3c40-42bd-a51d-df614038cb54/resourceGroups/sql-insights-uswest2-rg/providers/Microsoft.OperationalInsights/workspaces/",
-            "type": "string"
-        },
-        "VmResourceId": {
-            "defaultValue": "subscriptions/53663872-3c40-42bd-a51d-df614038cb54/resourceGroups/sql-insights-uswest2-rg/providers/Microsoft.Compute/virtualMachines/",
-            "type": "string"
         }
     },
     "variables": {
@@ -71,12 +63,12 @@
                         "typeHandlerVersion": "[parameters('MmaExtensionVersion')]",
                         "autoUpgradeMinorVersion": "true",
                         "settings": {
-                            "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
-                            "azureResourceId": "[parameters('VmResourceId')]",
+                            "workspaceId": "[reference(variables('WorkspaceResourceId'), '2015-03-20').customerId]",
+                            "azureResourceId": "[variables('VmResourceId')]",
                             "stopOnMultipleConnections": "[if(equals(toUpper(parameters('OsType')), 'WINDOWS'), 'false', 'true')]"
                         },
                         "protectedSettings": {
-                            "workspaceKey": "[listKeys(parameters('WorkspaceResourceId'), '2015-03-20').primarySharedKey]"
+                            "workspaceKey": "[listKeys(variables('WorkspaceResourceId'), '2015-03-20').primarySharedKey]"
                         }
                     },
                     "dependsOn": [
@@ -89,7 +81,7 @@
                     "apiVersion": "2018-10-01",
                     "location": "[variables('VmLocation')]",
                     "dependsOn": [
-                        "[parameters('VmResourceId')]"
+                        "[variables('VmResourceId')]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
