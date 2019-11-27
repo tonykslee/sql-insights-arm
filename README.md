@@ -29,13 +29,6 @@ This is a collection of ARM templates used to automate the deployment of Solutio
 | Vm Name               | String |                                                                  |
 | Os Type               | String | Operating System. Example Windows or Linux                       |
 
-* Mma Extension Version
-* Da Extension Version
-* Vm Type
-Vm Name
-Os Type
-Workspace Name
-
 ##### Agents Installed in this template:
 * Mma Extension - This extension installs the OMS Agent on the VM
 * Da Extension - This extension installs the Dependency Agent on the VM
