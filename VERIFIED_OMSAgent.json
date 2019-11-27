@@ -1,0 +1,90 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "MmaAgentName": {
+            "type": "string",
+            "defaultValue": "MMAExtension",
+            "metadata": {
+                "description": "The name will be Windows: MMAExtension, Linux: OMSExtension."
+            }
+        },
+        "VmLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "The Virtual Machine Location."
+            }
+        },
+        "MmaExtensionType": {
+            "type": "string",
+            "metadata": {
+                "description": "MMA Extension Type, Windows: MicrosoftMonitoringAgent, Linux: OmsAgentForLinux."
+            }
+        },
+        "MmaExtensionVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "MMA/OMS Extension Version."
+            }
+        },
+        "WorkspaceResourceId": {
+            "type": "string"
+        },
+        "VmResourceId": {
+            "type": "string"
+        },
+        "VmType": {
+            "type": "string",
+            "defaultValue": "virtualMachines",
+            "metadata": {
+                "description": "VM type: 1. virtualMachines, 2 virtualMachineScaleSets."
+            }
+        },
+        "VmName": {
+            "type": "string",
+            "metadata": {
+                "description": "The Virtual Machine Name."
+            }
+        },
+        "OsType": {
+            "type": "string",
+            "defaultValue": "Windows",
+            "metadata": {
+                "description": "Operating System. Example Windows or Linux"
+            }
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2018-10-01",
+            "name": "[parameters('VmName')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "location": "[parameters('VmLocation')]",
+            "resources": [
+                {
+                    "type": "extensions",
+                    "name": "[parameters('MmaAgentName')]",
+                    "apiVersion": "2018-10-01",
+                    "location": "[parameters('VmLocation')]",
+                    "properties": {
+                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                        "type": "[parameters('MmaExtensionType')]",
+                        "typeHandlerVersion": "[parameters('MmaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": "true",
+                        "settings": {
+                            "workspaceId": "[reference(parameters('WorkspaceResourceId'), '2015-03-20').customerId]",
+                            "azureResourceId": "[parameters('VmResourceId')]",
+                            "stopOnMultipleConnections": "[if(equals(toUpper(parameters('OsType')), 'WINDOWS'), 'false', 'true')]"
+                        },
+                        "protectedSettings": {
+                            "workspaceKey": "[listKeys(parameters('WorkspaceResourceId'), '2015-03-20').primarySharedKey]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/', parameters('VmType'), '/', parameters('VmName'))]"
+                    ]
+                }
+            ]
+        }
+    ]
+}
