@@ -2,36 +2,19 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "MmaAgentName": {
-            "type": "string",
-            "defaultValue": "MMAExtension",
-            "metadata": {
-                "description": "The name will be Windows: MMAExtension, Linux: OMSExtension."
-            }
-        },
-        "VmLocation": {
-            "type": "string",
-            "metadata": {
-                "description": "The Virtual Machine Location."
-            }
-        },
-        "MmaExtensionType": {
-            "type": "string",
-            "metadata": {
-                "description": "MMA Extension Type, Windows: MicrosoftMonitoringAgent, Linux: OmsAgentForLinux."
-            }
-        },
         "MmaExtensionVersion": {
             "type": "string",
+            "defaultValue": "1.0",
             "metadata": {
-                "description": "MMA/OMS Extension Version."
+                "description": "MMA/OMS Extension Version. Currently: Windows - 1.0, Linux - 1.4"
             }
         },
-        "WorkspaceResourceId": {
-            "type": "string"
-        },
-        "VmResourceId": {
-            "type": "string"
+        "DaExtensionVersion": {
+            "type": "string",
+            "defaultValue": "9.5",
+            "metadata": {
+                "description": "Dependency Agent Extension Version."
+            }
         },
         "VmType": {
             "type": "string",
@@ -52,23 +35,39 @@
             "metadata": {
                 "description": "Operating System. Example Windows or Linux"
             }
+        },
+        "WorkspaceName": {
+            "type": "string"
+        },
+        "WorkspaceResourceId": {
+            "defaultValue": "subscriptions/53663872-3c40-42bd-a51d-df614038cb54/resourceGroups/sql-insights-uswest2-rg/providers/Microsoft.OperationalInsights/workspaces/",
+            "type": "string"
+        },
+        "VmResourceId": {
+            "defaultValue": "subscriptions/53663872-3c40-42bd-a51d-df614038cb54/resourceGroups/sql-insights-uswest2-rg/providers/Microsoft.Compute/virtualMachines/",
+            "type": "string"
         }
+    },
+    "variables": {
+        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('WorkspaceName'))]",
+        "VmLocation": "[resourceGroup().location]",
+        "VmResourceId": "[concat('Microsoft.Compute/', parameters('VmType'), '/', parameters('VmName'))]"
     },
     "resources": [
         {
             "apiVersion": "2018-10-01",
             "name": "[parameters('VmName')]",
             "type": "Microsoft.Compute/virtualMachines",
-            "location": "[parameters('VmLocation')]",
+            "location": "[variables('VmLocation')]",
             "resources": [
                 {
                     "type": "extensions",
-                    "name": "[parameters('MmaAgentName')]",
+                    "name": "[if(equals(toUpper(parameters('OsType')), 'WINDOWS'), 'MMAExtension', 'OMSExtension')]",
                     "apiVersion": "2018-10-01",
-                    "location": "[parameters('VmLocation')]",
+                    "location": "[variables('VmLocation')]",
                     "properties": {
                         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                        "type": "[parameters('MmaExtensionType')]",
+                        "type": "[if(equals(toUpper(parameters('OsType')), 'WINDOWS'), 'MicrosoftMonitoringAgent', 'OmsAgentForLinux')]",
                         "typeHandlerVersion": "[parameters('MmaExtensionVersion')]",
                         "autoUpgradeMinorVersion": "true",
                         "settings": {
@@ -83,6 +82,21 @@
                     "dependsOn": [
                         "[concat('Microsoft.Compute/', parameters('VmType'), '/', parameters('VmName'))]"
                     ]
+                },
+                {
+                    "type": "extensions",
+                    "name": "[if(equals(toUpper(parameters('OsType')), 'WINDOWS'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
+                    "apiVersion": "2018-10-01",
+                    "location": "[variables('VmLocation')]",
+                    "dependsOn": [
+                        "[parameters('VmResourceId')]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
+                        "type": "[if(equals(toUpper(parameters('OsType')), 'WINDOWS'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
+                        "typeHandlerVersion": "[parameters('DaExtensionVersion')]",
+                        "autoUpgradeMinorVersion": true
+                    }
                 }
             ]
         }
